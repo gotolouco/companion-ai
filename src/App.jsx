@@ -2,15 +2,20 @@ import { useState } from 'react'
 import ThreeViewer from './components/ThreeViewer'
 import ChatBox from './components/ChatBox'
 import SidePanel from './components/SidePanel'
+import { sendMessageToLLM } from './components/APIConnection'
 import './index.css'
+
 
 export default function App() {
   const [chat, setChat] = useState([])
 
-  const handleSend = (msg) => {
+  const handleSend = async (msg) => {
     setChat(prev => [...prev, { sender: 'user', text: msg }])
-    // futuro: chamar API de IA
-    setChat(prev => [...prev, { sender: 'bot', text: "Resposta da IA..." }])
+    const botResponse = await sendMessageToLLM(msg)
+
+    console.log("Resposta do bot:", botResponse) // Log da resposta do bot
+
+    setChat(prev => [...prev, { sender: 'bot', text: botResponse }])
   }
 
   return (
