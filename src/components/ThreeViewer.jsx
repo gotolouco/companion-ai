@@ -1,27 +1,15 @@
 import { Canvas } from '@react-three/fiber'
 import { VRMAvatar } from './VRMAvatar'
 import { OrbitControls } from '@react-three/drei'
-import { useControls } from 'leva'
-import { useRef } from 'react'
 
-export default function ThreeViewer() {
-
-  const controls = useRef()
-
-  const {avatar} = useControls("VRM", {
-
-    avatar: {
-      value: 'example.vrm',
-    }
-
-  });
-
+export default function ThreeViewer({ speaking = false, avatar = 'example.vrm', armAngle = 1.0 }) {
   return (
-    <Canvas camera={{ position: [0, 1, 3] }}>
+    <Canvas camera={{ position: [0, 1.3, 1.8], fov: 30 }}>
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} />
-      <VRMAvatar avatar={avatar} />
-      <OrbitControls />
+      <VRMAvatar avatar={avatar} speaking={speaking} armAngle={armAngle} />
+      {/* Mira no tronco e limita o zoom para manter um enquadramento agradável */}
+      <OrbitControls target={[0, 1.0, 0]} minDistance={1.2} maxDistance={4} />
     </Canvas>
   )
 }

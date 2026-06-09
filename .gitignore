@@ -1,1 +1,9 @@
 node_modules
+
+# Build output (gerado por `npm run build` — não versionar)
+dist
+
+# Variáveis de ambiente (contêm chaves secretas — nunca commitar)
+.env
+.env.local
+.env.*.local

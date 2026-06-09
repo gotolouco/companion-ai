@@ -1,25 +1,62 @@
 import { useState } from "react"
-import '../index.css'
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
+import SidebarHeader from "./sidebar/SidebarHeader"
+import SidebarContent from "./sidebar/SidebarContent"
+import SidebarRail from "./sidebar/SidebarRail"
+import SidebarFooter from "./sidebar/SidebarFooter"
 
-export default function SidePanel() {
+export default function SidePanel({
+  avatar,
+  onAvatarChange,
+  personalidade,
+  onPersonalidadeChange,
+  armAngle,
+  onArmAngleChange,
+}) {
+  const [expanded, setExpanded] = useState(false)
 
-  const [visible, setVisible] = useState(false)
+  const salvar = () => {
+    localStorage.setItem(
+      "companion-config",
+      JSON.stringify({ avatar, personalidade, armAngle })
+    )
+  }
 
   return (
-    <>
-      <div className={`side-panel ${visible ? 'visible' : 'hidden'}`}>
-        <h2>Configurações</h2>
-        <button>Avatar</button>
-        <button>Personalidade</button>
-        <button>Configurar Reações</button>
-        <button>Salvar Configurações</button>
-      </div>
-      <button 
-        className="toggle-button" 
-        onClick={() => setVisible(!visible)}
+    <TooltipProvider delayDuration={200}>
+      <aside
+        className={cn(
+          "fixed left-0 top-0 z-20 flex h-full flex-col border-r border-sidebar-border bg-sidebar shadow-lg transition-all duration-300 ease-in-out",
+          expanded ? "w-[85vw] max-w-72" : "w-14 md:w-16"
+        )}
       >
-        {visible ? '−' : '+'}
-      </button>
-    </>
+        <SidebarHeader expanded={expanded} />
+
+        {expanded ? (
+          <SidebarContent
+            avatar={avatar}
+            onAvatarChange={onAvatarChange}
+            personalidade={personalidade}
+            onPersonalidadeChange={onPersonalidadeChange}
+            armAngle={armAngle}
+            onArmAngleChange={onArmAngleChange}
+          />
+        ) : (
+          <SidebarRail
+            avatar={avatar}
+            personalidade={personalidade}
+            armAngle={armAngle}
+            onExpand={() => setExpanded(true)}
+          />
+        )}
+
+        <SidebarFooter
+          expanded={expanded}
+          onSave={salvar}
+          onToggle={() => setExpanded((v) => !v)}
+        />
+      </aside>
+    </TooltipProvider>
   )
 }
