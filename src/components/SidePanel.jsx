@@ -13,6 +13,8 @@ export default function SidePanel({
   onPersonalidadeChange,
   armAngle,
   onArmAngleChange,
+  darkMode,
+  onDarkModeChange,
 }) {
   const [expanded, setExpanded] = useState(false)
 
@@ -27,7 +29,7 @@ export default function SidePanel({
     <TooltipProvider delayDuration={200}>
       <aside
         className={cn(
-          "fixed left-0 top-0 z-20 flex h-full flex-col border-r border-sidebar-border bg-sidebar shadow-lg transition-all duration-300 ease-in-out",
+          "sidebar-glass fixed left-0 top-0 z-20 flex h-full flex-col border-r border-sidebar-border transition-all duration-300 ease-in-out",
           expanded ? "w-[85vw] max-w-72" : "w-14 md:w-16"
         )}
       >
@@ -41,12 +43,16 @@ export default function SidePanel({
             onPersonalidadeChange={onPersonalidadeChange}
             armAngle={armAngle}
             onArmAngleChange={onArmAngleChange}
+            darkMode={darkMode}
+            onDarkModeChange={onDarkModeChange}
           />
         ) : (
           <SidebarRail
             avatar={avatar}
             personalidade={personalidade}
             armAngle={armAngle}
+            darkMode={darkMode}
+            onDarkModeChange={onDarkModeChange}
             onExpand={() => setExpanded(true)}
           />
         )}

@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { Slider as SliderPrimitive } from "radix-ui"
-
 import { cn } from "@/lib/utils"
 
 function Slider({
@@ -11,14 +10,18 @@ function Slider({
   value,
   min = 0,
   max = 100,
+  step = 1,
   ...props
 }) {
-  const _values = React.useMemo(() =>
-    Array.isArray(value)
-      ? value
-      : Array.isArray(defaultValue)
+  const _values = React.useMemo(
+    () =>
+      Array.isArray(value)
+        ? value
+        : Array.isArray(defaultValue)
         ? defaultValue
-        : [min, max], [value, defaultValue, min, max])
+        : [min, max],
+    [value, defaultValue, min, max]
+  )
 
   return (
     <SliderPrimitive.Root
@@ -27,30 +30,46 @@ function Slider({
       value={value}
       min={min}
       max={max}
+      step={step}
       className={cn(
-        "relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col",
+        "relative flex w-full touch-none select-none items-center data-[disabled]:opacity-50",
+        "data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col",
         className
       )}
-      {...props}>
+      {...props}
+    >
       <SliderPrimitive.Track
         data-slot="slider-track"
         className={cn(
-          "relative grow overflow-hidden rounded-full bg-muted data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5"
-        )}>
+          "relative grow overflow-hidden rounded-full bg-muted/60 backdrop-blur-sm",
+          "data-[orientation=horizontal]:h-2 data-[orientation=horizontal]:w-full",
+          "data-[orientation=vertical]:h-full data-[orientation=vertical]:w-2"
+        )}
+      >
         <SliderPrimitive.Range
           data-slot="slider-range"
           className={cn(
-            "absolute bg-primary data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
-          )} />
+            "absolute bg-gradient-to-r from-primary/80 to-primary",
+            "data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
+          )}
+        />
       </SliderPrimitive.Track>
-      {Array.from({ length: _values.length }, (_, index) => (
+
+      {_values.map((_, index) => (
         <SliderPrimitive.Thumb
-          data-slot="slider-thumb"
           key={index}
-          className="block size-4 shrink-0 rounded-full border border-primary bg-white shadow-sm ring-ring/50 transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50" />
+          data-slot="slider-thumb"
+          className={cn(
+            "block size-5 rounded-full transition-all duration-200 ease-out focus-visible:outline-none",
+            "glass bg-card/90 border-2 border-primary/70 shadow-md",
+            "hover:scale-110 hover:border-primary hover:shadow-lg hover:shadow-primary/20",
+            "focus-visible:ring-4 focus-visible:ring-ring/80 focus-visible:border-primary",
+            "active:scale-95 active:bg-primary/20"
+          )}
+        />
       ))}
     </SliderPrimitive.Root>
-  );
+  )
 }
 
 export { Slider }

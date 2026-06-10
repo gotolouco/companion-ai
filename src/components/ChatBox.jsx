@@ -23,7 +23,7 @@ export default function ChatBox({ onSend }) {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Digite sua mensagem..."
-        className="flex-1 border-0 bg-transparent shadow-none focus-visible:ring-0"
+        className="flex-1 bg-transparent border-0 outline-none text-sm text-foreground placeholder:text-muted-foreground px-3 py-1.5 relative z-10"
       />
       <Button type="submit" size="icon" className="shrink-0 rounded-xl">
         <Send className="h-4 w-4" />

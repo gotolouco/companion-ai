@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ThreeViewer from './components/ThreeViewer'
 import ChatBox from './components/ChatBox'
 import ChatHistory from './components/ChatHistory'
@@ -18,10 +18,23 @@ export default function App() {
   const [personalidade, setPersonalidade] = useState(PERSONALIDADE_PADRAO)
   const [avatar, setAvatar] = useState(MODELOS[0]?.file)
   const [armAngle, setArmAngle] = useState(1.35)
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches
+    }
+    return false
+  })
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [darkMode])
 
   const { chat, loading, speaking, sendMessage, falarComoBot } = useChat(personalidade)
 
-  // Ao trocar de modelo, o novo avatar se apresenta dizendo o próprio nome.
   const trocarAvatar = (file) => {
     setAvatar(file)
     falarComoBot(saudacaoDoModelo(file))
@@ -39,6 +52,8 @@ export default function App() {
         onPersonalidadeChange={setPersonalidade}
         armAngle={armAngle}
         onArmAngleChange={setArmAngle}
+        darkMode={darkMode}
+        onDarkModeChange={setDarkMode}
       />
     </div>
   )
