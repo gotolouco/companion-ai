@@ -29,8 +29,8 @@ export default function SidePanel({
     <TooltipProvider delayDuration={200}>
       <aside
         className={cn(
-          "sidebar-glass fixed left-0 top-0 z-20 flex h-full flex-col border-r border-sidebar-border transition-all duration-300 ease-in-out",
-          expanded ? "w-[85vw] max-w-72" : "w-14 md:w-16"
+          "sidebar-glass fixed left-0 top-0 z-20 flex h-full flex-col h-full border-sidebar-border transition-all duration-300 ease-in-out",
+          expanded ? "w-[85vw, 288px]" : "w-14 md:w-16"
         )}
       >
         <SidebarHeader expanded={expanded} />
