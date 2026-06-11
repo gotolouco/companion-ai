@@ -16,6 +16,8 @@ export default function SidePanel({
   onArmAngleChange,
   background,
   onBackgroundChange,
+  nomeUsuario,
+  onNomeUsuarioChange,
 }) {
   
   const [expanded, setExpanded] = useState(false)
@@ -50,7 +52,7 @@ export default function SidePanel({
 
       <aside
         className={cn(
-          "fixed left-0 top-0 z-30 flex h-full flex-col border-r border-sidebar-border bg-sidebar shadow-lg transition-all duration-300 ease-in-out",
+          "sidebar-glass fixed left-0 top-0 z-30 flex h-full flex-col border-r border-sidebar-border transition-all duration-300 ease-in-out",
           open ? "translate-x-0 w-[85vw] max-w-72" : "-translate-x-full",
           "sm:translate-x-0",
           expanded ? "sm:w-72" : "sm:w-16"
@@ -68,6 +70,8 @@ export default function SidePanel({
             onArmAngleChange={onArmAngleChange}
             background={background}
             onBackgroundChange={onBackgroundChange}
+            nomeUsuario={nomeUsuario}
+            onNomeUsuarioChange={onNomeUsuarioChange}
           />
         ) : (
           <SidebarRail

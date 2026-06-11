@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
 import { MODELOS } from "@/lib/models"
 import { PERSONALIDADES } from "@/lib/personalidades"
@@ -22,9 +23,22 @@ export default function SidebarContent({
   onArmAngleChange,
   background,
   onBackgroundChange,
+  nomeUsuario,
+  onNomeUsuarioChange,
 }) {
   return (
     <nav className="flex flex-1 flex-col gap-5 overflow-y-auto p-4">
+      <Field>
+        <FieldLabel icon={User}>Seu nome</FieldLabel>
+        <Input
+          type="text"
+          value={nomeUsuario}
+          onChange={(e) => onNomeUsuarioChange(e.target.value)}
+          placeholder="Como você quer ser chamado?"
+          className="text-sm"
+        />
+      </Field>
+
       <Field>
         <FieldLabel icon={User}>Avatar</FieldLabel>
         <Select value={avatar} onValueChange={onAvatarChange}>

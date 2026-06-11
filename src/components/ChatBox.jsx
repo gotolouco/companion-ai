@@ -17,7 +17,7 @@ export default function ChatBox({ onSend }) {
     <div className="fixed inset-x-0 bottom-3 z-10 px-3 sm:bottom-5 sm:pl-16 sm:pr-4">
       <form
         onSubmit={handleSubmit}
-        className="mx-auto flex w-full max-w-2xl items-center gap-2 rounded-2xl border border-border bg-card p-2 shadow-lg"
+        className="chatbox-glass mx-auto flex w-full max-w-2xl items-center gap-2 rounded-2xl p-2"
       >
         <Input
           type="text"

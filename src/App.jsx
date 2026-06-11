@@ -1,32 +1,60 @@
-import { useState } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import ThreeViewer from './components/ThreeViewer'
 import ChatBox from './components/ChatBox'
 import ChatHistory from './components/ChatHistory'
 import SidePanel from './components/SidePanel'
 import { useChat } from '@/hooks/useChat'
 import { MODELOS } from '@/lib/models'
-import { PERSONALIDADE_PADRAO } from '@/lib/personalidades'
+import { PERSONALIDADE_PADRAO, gerarRespostaRosto } from '@/lib/personalidades'
+import { montarSaudacao } from '@/lib/saudacao'
 import './index.css'
-
-
-function saudacaoDoModelo(file) {
-  const nome = MODELOS.find((m) => m.file === file)?.label || 'seu companheiro'
-  return `Oi! Eu sou ${nome}. Prazer em te conhecer, como você está?`
-}
 
 export default function App() {
   const [personalidade, setPersonalidade] = useState(PERSONALIDADE_PADRAO)
   const [avatar, setAvatar] = useState(MODELOS[0]?.file)
   const [armAngle, setArmAngle] = useState(1.35)
   const [background, setBackground] = useState(null)
+  const [eyesClosed, setEyesClosed] = useState(false)
+  const [nomeUsuario, setNomeUsuario] = useState('')
+  const timeoutRef = useRef(null)
+
+  const nomeModelo = MODELOS.find((m) => m.file === avatar)?.label || 'Companheiro'
 
   const { chat, loading, speaking, gesture, sendMessage, falarComoBot } =
-    useChat(personalidade)
+    useChat(personalidade, nomeModelo, nomeUsuario)
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [])
+
+
+  const saudouRef = useRef(false)
+  useEffect(() => {
+    if (saudouRef.current) return
+    saudouRef.current = true
+    falarComoBot(montarSaudacao({ nomeUsuario, nomeModelo }))
+  }, [])
 
   const trocarAvatar = (file) => {
     setAvatar(file)
-    falarComoBot(saudacaoDoModelo(file))
+    const nome = MODELOS.find((m) => m.file === file)?.label
+    falarComoBot(montarSaudacao({ nomeUsuario, nomeModelo: nome }))
   }
+
+  const handleFaceClick = useCallback(() => {
+    if (timeoutRef.current) return 
+    
+    setEyesClosed(true)
+    const resposta = gerarRespostaRosto(personalidade)
+    falarComoBot(resposta)
+
+    timeoutRef.current = setTimeout(() => {
+      setEyesClosed(false)
+      timeoutRef.current = null
+    }, 2000)
+  }, [personalidade, falarComoBot])
 
   
   const appStyle = background
@@ -35,7 +63,7 @@ export default function App() {
 
   return (
     <div className="app pl-0 sm:pl-16" style={appStyle}>
-      <ThreeViewer speaking={speaking} avatar={avatar} armAngle={armAngle} gesture={gesture} />
+      <ThreeViewer speaking={speaking} avatar={avatar} armAngle={armAngle} gesture={gesture} onFaceClick={handleFaceClick} eyesClosed={eyesClosed} />
       <ChatHistory messages={chat} loading={loading} />
       <ChatBox onSend={sendMessage} />
       <SidePanel
@@ -47,6 +75,8 @@ export default function App() {
         onArmAngleChange={setArmAngle}
         background={background}
         onBackgroundChange={setBackground}
+        nomeUsuario={nomeUsuario}
+        onNomeUsuarioChange={setNomeUsuario}
       />
     </div>
   )
