@@ -18,6 +18,8 @@ export default function SidePanel({
   onBackgroundChange,
   nomeUsuario,
   onNomeUsuarioChange,
+  dark,
+  onToggleDark,
 }) {
   
   const [expanded, setExpanded] = useState(false)
@@ -87,6 +89,8 @@ export default function SidePanel({
           open={open}
           onToggle={() => setExpanded((v) => !v)}
           onClose={() => setOpen(false)}
+          dark={dark}
+          onToggleDark={onToggleDark}
         />
       </aside>
     </TooltipProvider>

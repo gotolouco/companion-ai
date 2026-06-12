@@ -4,6 +4,7 @@ import { OrbitControls } from '@react-three/drei'
 
 export default function ThreeViewer({
   speaking = false,
+  speechText = "",
   avatar = 'example.vrm',
   armAngle = 1.0,
   gesture = null,
@@ -17,11 +18,11 @@ export default function ThreeViewer({
       <VRMAvatar
         avatar={avatar}
         speaking={speaking}
+        speechText={speechText}
         armAngle={armAngle}
         gesture={gesture}
         eyesClosed={eyesClosed}
       />
-      {/* Mira no tronco e limita o zoom para manter um enquadramento agradável */}
       <OrbitControls target={[0, 1.0, 0]} minDistance={1.2} maxDistance={4} />
     </Canvas>
   )

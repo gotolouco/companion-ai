@@ -2,9 +2,18 @@ import { VRMUtils } from '@pixiv/three-vrm'
 
 
 const POSE = {
-  spread: 0.12,   
+  spread: 0.12, 
   forward: 0.18, 
-  elbow: 0.25,   
+  elbow: 0.25,    
+}
+
+
+const VOWEL_NAMES = {
+  aa: ["aa", "A", "a"],
+  ih: ["ih", "I", "i"],
+  uu: ["ou", "U", "uu", "u"],
+  eh: ["ee", "E", "eh", "e"],
+  oh: ["oh", "O", "o"],
 }
 
 export function setExpr(expr, names, value) {
@@ -20,15 +29,17 @@ export function prepararAvatar(scene, vrm) {
   VRMUtils.removeUnnecessaryVertices(scene)
   VRMUtils.combineSkeletons(scene)
   VRMUtils.combineMorphs(vrm)
+
   VRMUtils.rotateVRM0(vrm)
 
   vrm.scene.traverse((obj) => {
     obj.frustumCulled = false
   })
 
-
+  
   vrm._isVRM0 = vrm.meta?.metaVersion === "0"
 
+ 
   const head = vrm.humanoid?.getNormalizedBoneNode("head")
   vrm._headBind = head ? { x: head.rotation.x, y: head.rotation.y } : { x: 0, y: 0 }
 }
@@ -50,6 +61,7 @@ function applyArmPose(humanoid, armAngle, sway, isVRM0) {
   if (rightLowerArm) rightLowerArm.rotation.set(0, POSE.elbow, 0)
 }
 
+
 function applyIdleMotion(humanoid, t, breath) {
   const chest = humanoid?.getNormalizedBoneNode("chest")
   if (chest) chest.rotation.x = breath * 0.02
@@ -58,11 +70,12 @@ function applyIdleMotion(humanoid, t, breath) {
   if (spine) spine.rotation.y = Math.sin(t * 0.6) * 0.03
 }
 
+
 function applyHead(humanoid, bind, t, gesture, mouse) {
   const head = humanoid?.getNormalizedBoneNode("head")
   if (!head) return
 
-  let offX = Math.sin(t * 0.8) * 0.02
+  let offX = Math.sin(t * 0.8) * 0.02 
   let offY = 0
 
   if (gesture) {
@@ -70,7 +83,7 @@ function applyHead(humanoid, bind, t, gesture, mouse) {
     if (gesture === "nod") offX = osc
     else if (gesture === "shake") offY = osc
   } else if (mouse) {
-    offX = mouse.y * 0.12
+    offX = -mouse.y * 0.12
     offY = mouse.x * 0.18
   }
 
@@ -78,31 +91,31 @@ function applyHead(humanoid, bind, t, gesture, mouse) {
   head.rotation.y = bind.y + offY
 }
 
+
 function applyBlink(expr, t, eyesClosed = false) {
   const blink = eyesClosed ? 1 : (Math.sin(t * 2.5) > 0.97 ? 1 : 0)
   setExpr(expr, ["blink", "Blink"], blink)
 }
-
-function applyLipSync(expr, t, speaking) {
-  const mouth = speaking ? (Math.sin(t * 12) * 0.5 + 0.5) : 0
-  setExpr(expr, ["aa", "A"], mouth)
-  setExpr(expr, ["ih", "I"], 0)
-  setExpr(expr, ["ou", "U"], 0)
-  setExpr(expr, ["ee", "E"], 0)
-  setExpr(expr, ["oh", "O"], 0)
+function applyLipSync(expr, intensities) {
+  const v = intensities || {}
+  setExpr(expr, VOWEL_NAMES.aa, v.aa ?? 0)
+  setExpr(expr, VOWEL_NAMES.ih, v.ih ?? 0)
+  setExpr(expr, VOWEL_NAMES.uu, v.uu ?? 0)
+  setExpr(expr, VOWEL_NAMES.eh, v.eh ?? 0)
+  setExpr(expr, VOWEL_NAMES.oh, v.oh ?? 0)
 }
 
 /**
- * @param {object} vrm
+ * @param {object} vrm 
  * @param {number} t 
  * @param {number} delta 
- * @param {boolean} speaking 
+ * @param {object} intensities 
  * @param {number} armAngle 
  * @param {string|null} gesture 
  * @param {boolean} eyesClosed 
  * @param {{x:number,y:number}|null} mouse 
  */
-export function animarAvatar(vrm, t, delta, speaking, armAngle = 1.0, gesture = null, eyesClosed = false, mouse = null) {
+export function animarAvatar(vrm, t, delta, intensities, armAngle = 1.0, gesture = null, eyesClosed = false, mouse = null) {
   const humanoid = vrm.humanoid
   const breath = Math.sin(t * 1.5)
 
@@ -113,7 +126,7 @@ export function animarAvatar(vrm, t, delta, speaking, armAngle = 1.0, gesture = 
   const expr = vrm.expressionManager
   if (expr) {
     applyBlink(expr, t, eyesClosed)
-    applyLipSync(expr, t, speaking)
+    applyLipSync(expr, intensities)
   }
 
   vrm.update(delta)

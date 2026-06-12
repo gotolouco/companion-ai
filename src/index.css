@@ -11,7 +11,7 @@
   --foreground:         oklch(0.18 0.04 285);
   --card:               oklch(1 0 0 / 0.55);
   --card-foreground:    oklch(0.18 0.04 285);
-  --popover:            oklch(0.99 0.008 285 / 0.85);
+  --popover:            oklch(0.99 0.008 285);
   --popover-foreground: oklch(0.18 0.04 285);
   --primary:            oklch(0.52 0.24 290);
   --primary-foreground: oklch(0.99 0.005 285);
@@ -141,6 +141,8 @@ html, body, #root {
   height: 100%;
   margin: 0;
   font-family: "Quicksand", 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--foreground);
+  background: var(--background);
 }
 
 .app {
@@ -256,6 +258,7 @@ html, body, #root {
 
 .sidebar-glass {
   background: var(--sidebar);
+  color: var(--sidebar-foreground);
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:

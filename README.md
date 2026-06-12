@@ -1,31 +1,38 @@
-# Companion AI 
+# Companion AI
 
-Um **companheiro virtual em 3D**: um avatar VRM renderizado em tempo real que conversa com você através de um chat conectado a um modelo de linguagem (LLM). 
+Um **companheiro virtual em 3D** renderizado em tempo real que conversa com você através de um chat conectado a um modelo de linguagem (LLM), com voz humanizada, animações faciais e busca na web.
 
 ## ✨ Funcionalidades
 
 ### Conversa com IA
 - **Chat com LLM** via [Groq](https://groq.com/) (modelo `llama-3.3-70b-versatile`), com respostas rápidas.
 - **Memória de contexto** — o histórico inteiro da conversa é enviado ao modelo, então o companheiro lembra do que foi dito antes.
-- **Fundo de Tela** — Deixe sua conversa mais estilosa com um fundo de tela que vc pode escolher, desde uma praia a uma cidade vibrante.
-- **Personalidades** selecionáveis (Amigável, Profissional, Engraçado, Sarcástico) que alteram o tom das respostas via *system prompt*.
-- **Respostas humanizadas** — o prompt instrui o modelo a falar de forma natural e coloquial, sem listas, títulos ou linguagem de manual.
-- **Tratamento de erros amigável** — mensagens claras na tela para falhas de chave (401), modelo (404) ou limite de uso (429).
+- **Busca na web (RAG)** — perguntas factuais/atuais disparam uma busca via [Tavily](https://tavily.com); os resultados são injetados no contexto para respostas embasadas.
+- **Personalidades** selecionáveis (Amigável, Profissional, Engraçado, Sarcástico) que alteram o tom das respostas.
+- **Respostas humanizadas** — prompt afinado para soar como um amigo real: frases curtas, naturais, sem listas, títulos ou tom de manual.
+- **Saudação contextual** — cumprimenta conforme a hora do dia e comenta quando você volta depois de um tempo, com frases variadas.
+- **Nome do usuário** — você se identifica e o companheiro te chama pelo nome.
+- **Tratamento de erros amigável** — mensagens claras para falhas de chave (401), modelo (404) ou limite de uso (429).
 
 ### Avatar 3D
-- **Renderização VRM** com [Three.js](https://threejs.org/) + [@react-three/fiber](https://github.com/pmndrs/react-three-fiber) e [@pixiv/three-vrm](https://github.com/pixiv/three-vrm).
-- **Seleção de modelo** — dropdown que lista os avatares disponíveis na pasta `public/models/`.
-- **Animação procedural** — respiração, balanço sutil do corpo, oscilação da cabeça e piscar automáticos.
-- **Pose natural** — braços baixados (saindo da T-pose), cotovelos levemente dobrados, com ângulo **ajustável por um slider** (cada modelo tem um rig diferente).
-- **Lip-sync** — o avatar mexe a boca enquanto "fala" a resposta, por um tempo proporcional ao tamanho do texto.
+- **Renderização VRM** com [Three.js](https://threejs.org/) + [@react-three/fiber](https://github.com/pmndrs/react-three-fiber) e [@pixiv/three-vrm](https://github.com/pixiv/three-vrm). Suporta VRM 0.x e 1.0.
+- **Seleção de modelo** — dropdown com os avatares da pasta `public/models/`.
+- **Lip-sync por vogais** — a boca articula as vogais (A/I/U/E/O) estimadas a partir do texto enquanto o avatar "fala".
+- **Olhar que acompanha** — a cabeça segue suavemente o cursor do mouse.
+- **Gestos de cabeça** — acena (sim) ou nega (não) conforme o conteúdo da resposta.
+- **Animação procedural** — respiração, balanço sutil do corpo e piscar automáticos.
+- **Reação ao toque** — clicar no avatar faz ele fechar os olhos e reagir com uma fala.
+- **Pose natural ajustável** — braços baixados (saindo da T-pose) com ângulo controlável por slider (compatível com rigs diferentes).
 - **Orientação automática** — modelos VRM 0.x são girados para ficar de frente para a câmera.
-- **Saudação ao trocar** — ao escolher um novo avatar, ele se apresenta dizendo o próprio nome.
-- **Controles de câmera** — orbitar, aproximar e afastar com o mouse ([OrbitControls](https://github.com/pmndrs/drei)).
 
 ### Interface
-- **Sidebar retrátil** — uma coluna fina sempre visível (logo + ícones) que expande para um painel com os controles de configuração.
+- **Tema Liquid Glass** roxo, com efeito de vidro fosco (backdrop-blur) em painéis e balões.
+- **Modo claro / escuro** — alternável e persistido; respeita a preferência do sistema na primeira visita.
+- **Fundos de tela** — galeria de miniaturas para escolher uma imagem de fundo (de `public/assets/`).
+- **Sidebar retrátil** — coluna fina no desktop que expande; no celular vira um menu com botão hambúrguer.
+- **Salvamento automático** das configurações (avatar, personalidade, pose) no `localStorage`.
 - **Design system** com [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) + ícones [lucide-react](https://lucide.dev/).
-- **Layout responsivo** — adapta-se a telas de celular a desktop.
+- **Layout responsivo** — adapta-se de telas de celular a desktop.
 
 ## 🛠️ Stack
 
@@ -38,6 +45,7 @@ Um **companheiro virtual em 3D**: um avatar VRM renderizado em tempo real que co
 | 3D | three, @react-three/fiber, @react-three/drei |
 | VRM | @pixiv/three-vrm |
 | IA | Groq API (compatível com OpenAI) |
+| Busca web | Tavily API |
 
 ## 🚀 Como rodar
 
@@ -46,12 +54,13 @@ Um **companheiro virtual em 3D**: um avatar VRM renderizado em tempo real que co
 npm install
 ```
 
-### 2. Configurar a chave de API
-Crie um arquivo `.env` na raiz (use `.env.example` como base) com sua chave do Groq:
+### 2. Configurar as chaves de API
+Crie um arquivo `.env` na raiz (use `.env.example` como base):
 ```env
-VITE_GROQ_KEY=sua-chave-aqui
+VITE_GROQ_KEY=sua-chave-do-groq
+VITE_TAVILY_KEY=sua-chave-da-tavily   # opcional, para busca web
 ```
-> Pegue uma chave gratuita em [console.groq.com](https://console.groq.com/keys).
+> Groq: chave grátis em [console.groq.com](https://console.groq.com/keys). Tavily: [tavily.com](https://tavily.com).
 
 ### 3. Rodar em desenvolvimento
 ```bash
@@ -68,14 +77,15 @@ Acesse o endereço exibido no terminal (geralmente `http://localhost:5173`).
 | `npm run preview` | Pré-visualiza a build de produção |
 | `npm run lint` | Roda o ESLint |
 | `npm run models` | Regenera a lista de avatares a partir de `public/models/` |
+| `npm run backgrounds` | Regenera a lista de fundos a partir de `public/assets/` |
 
-## 🎭 Adicionar um novo avatar
+## 🎭 Adicionar conteúdo
 
-1. Coloque o arquivo `.vrm` em `public/models/`.
-2. Rode `npm run models` para atualizar a lista.
-3. O modelo aparecerá no dropdown da sidebar.
+**Novo avatar:** coloque o `.vrm` em `public/models/` e rode `npm run models`.
 
-> Os arquivos precisam ser **VRM** (não GLB/FBX). Modelos VRM com rig humanoide e *blendshapes* de boca (`A I U E O`) aproveitam todas as animações e o lip-sync.
+**Novo fundo:** coloque a imagem em `public/assets/` e rode `npm run backgrounds`.
+
+> Os modelos precisam ser **VRM** (não GLB/FBX). Modelos com rig humanoide e *blendshapes* de boca (`A I U E O`) aproveitam o lip-sync e as animações.
 
 ## 📁 Estrutura
 
@@ -91,13 +101,23 @@ src/
 │   ├── sidebar/             # Subcomponentes da sidebar
 │   └── ui/                  # Componentes do shadcn/ui
 ├── hooks/
-│   └── useChat.js           # Estado e lógica da conversa
+│   ├── useChat.js           # Estado e lógica da conversa
+│   ├── useTextLipSync.js    # Gera intensidades de vogais a partir do texto
+│   └── useDarkMode.js       # Alterna e persiste o tema claro/escuro
 └── lib/
-    ├── llm.js               # Comunicação com o LLM (Groq)
-    ├── vrm.js               # Helpers de pose, animação e expressões
+    ├── llm.js               # Comunicação com o LLM (Groq) + injeção de busca
+    ├── websearch.js         # Busca web (Tavily) e heurística de quando buscar
+    ├── vrm.js               # Pose, animação, lip-sync e expressões do VRM
+    ├── gesto.js             # Detecta gesto de cabeça (sim/não) na resposta
+    ├── saudacao.js          # Saudação contextual (hora do dia + ausência)
     ├── models.js            # Lista de avatares (gerada)
+    ├── backgrounds.js       # Lista de fundos (gerada)
     ├── personalidades.js    # Personalidades disponíveis
     └── utils.js             # Utilitário cn() do shadcn
 ```
 
+## ⚠️ Notas
 
+- As chaves de API ficam no front-end (app sem backend), então **vão no bundle**. Para produção, o ideal é um backend/proxy que guarde as chaves. Nunca commite o `.env` (já está no `.gitignore`).
+- O free tier das APIs tem limite de requisições; em caso de erro **429**, aguarde ou adicione saldo/cota.
+- O lip-sync é estimado a partir do texto (não áudio real) — uma aproximação convincente, mas não fonéticamente perfeita.

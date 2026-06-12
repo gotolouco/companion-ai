@@ -12,11 +12,11 @@ export function useChat(personalidade, nomeModelo, nomeUsuario) {
   const [chat, setChat] = useState([])
   const [loading, setLoading] = useState(false)
   const [speaking, setSpeaking] = useState(false)
+  const [speechText, setSpeechText] = useState("")
   const [gesture, setGesture] = useState(null)
   const speakTimer = useRef(null)
   const gestureTimer = useRef(null)
 
- 
   const gesticular = useCallback((gesto) => {
     if (!gesto) return
     setGesture(gesto)
@@ -29,6 +29,7 @@ export function useChat(personalidade, nomeModelo, nomeUsuario) {
     (texto, gestoForcado) => {
       setChat((prev) => [...prev, { sender: "bot", text: texto }])
 
+      setSpeechText(texto)
       setSpeaking(true)
       clearTimeout(speakTimer.current)
       speakTimer.current = setTimeout(() => setSpeaking(false), duracaoDaFala(texto))
@@ -53,5 +54,5 @@ export function useChat(personalidade, nomeModelo, nomeUsuario) {
     [chat, personalidade, nomeModelo, nomeUsuario, falarComoBot]
   )
 
-  return { chat, loading, speaking, gesture, sendMessage, falarComoBot, gesticular }
+  return { chat, loading, speaking, speechText, gesture, sendMessage, falarComoBot, gesticular }
 }

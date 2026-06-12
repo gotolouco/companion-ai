@@ -1,9 +1,9 @@
-import { ChevronLeft, ChevronRight, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, X, Sun, Moon } from "lucide-react"
 import pkg from "../../../package.json"
 
 const version = pkg.version
 
-export default function SidebarFooter({ expanded, open, onToggle, onClose }) {
+export default function SidebarFooter({ expanded, open, onToggle, onClose, dark, onToggleDark }) {
   const aberto = expanded || open
 
   return (
@@ -18,27 +18,31 @@ export default function SidebarFooter({ expanded, open, onToggle, onClose }) {
         </button>
       )}
 
+   
+      <button
+        onClick={onToggleDark}
+        className="flex h-9 w-full items-center justify-center gap-2 rounded-lg text-muted-foreground transition-colors hover:bg-sidebar-accent"
+        aria-label={dark ? "Ativar modo claro" : "Ativar modo escuro"}
+      >
+        {dark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+        {aberto && <span className="text-sm">{dark ? "Modo escuro" : "Modo claro"}</span>}
+      </button>
+
+   
       <button
         onClick={onToggle}
         className="hidden h-9 w-full items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-sidebar-accent sm:flex"
         aria-label={expanded ? "Recolher painel" : "Expandir painel"}
       >
-        {expanded ? (
-          <ChevronLeft className="h-5 w-5" />
-        ) : (
-          <ChevronRight className="h-5 w-5" />
-        )}
+        {expanded ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
       </button>
 
-      <span
-        className={cnVersao(aberto)}
-      >
+      <span className={cnVersao(aberto)}>
         {aberto ? `Companion AI v${version}` : `v${version}`}
       </span>
     </div>
   )
 }
-
 
 function cnVersao(aberto) {
   return aberto

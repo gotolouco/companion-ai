@@ -17,7 +17,7 @@ export default function ChatHistory({ messages, loading }) {
           <div
             key={i}
             className={cn(
-              "max-w-[80%] whitespace-pre-wrap break-words rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
+              "max-w-[80%] shrink-0 whitespace-pre-wrap break-words rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
               m.sender === "user"
                 ? "bubble-user self-end rounded-br-sm"
                 : "bubble-bot self-start rounded-bl-sm"

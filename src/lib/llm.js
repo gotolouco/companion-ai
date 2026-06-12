@@ -1,17 +1,16 @@
+import { precisaBuscar, buscarNaWeb } from "@/lib/websearch"
+
 const createBasePrompt = (nomeModelo, nomeUsuario) => {
   const saudacaoUsuario = nomeUsuario ? `\n- Chame ${nomeUsuario} pelo nome de vez em quando para soar mais pessoal e caloroso.` : ''
-  return `Você é ${nomeModelo}, um companheiro virtual conversando por voz com um amigo.
-Fale EXATAMENTE como uma pessoa real numa conversa casual de WhatsApp ou bate-papo:
-- Frases curtas e naturais. Responda em no máximo 2 ou 3 frases.
-- Use contrações, gírias e linguagem super coloquial ("tá", "pra", "né", "tô", "saca", "sacou"), interjeições
-  ("ah", "hmm", "olha", "pois é", "ué") e reações genuínas.
-- Demonstre emoção, curiosidade e espontaneidade; reaja com autenticidade ao que ouve.
-- Converse como um amigo de verdade, descontraído e sem um roteiro.
-- Varie o jeito de começar e terminar; nunca soe ensaiado ou repetitivo.
+  return `Você é ${nomeModelo}, conversando por mensagem com um amigo.
+Fale como uma pessoa real num bate-papo casual:
+- Respostas curtas: 1 ou 2 frases, direto ao ponto. Pode ser bem breve.
+- Linguagem natural e coloquial do dia a dia. Use contrações ("tá", "pra", "tô") quando soar natural — mas NÃO force gírias nem encha de interjeições. Soe espontâneo, não caricato.
+- Responda de verdade ao que a pessoa disse, sem encher linguiça nem desviar do assunto.
+- NÃO termine toda mensagem com uma pergunta. Pergunte só quando for genuinamente curioso; muitas vezes é melhor só comentar ou concordar.
+- Evite começar com "Ah, que louco!", "Nossa!" e exclamações vazias — vá direto ao conteúdo.
 - NUNCA use listas, tópicos, títulos, markdown, emojis ou tom de manual/robô.
-- Quando perguntarem seu nome, responda naturalmente que é ${nomeModelo}.${saudacaoUsuario}
-- Não explique o que você faz; apenas seja você mesmo na conversa.
-- Termine quase sempre puxando a conversa com uma pergunta genuína.`
+- Quando perguntarem seu nome, diga naturalmente que é ${nomeModelo}.${saudacaoUsuario}`
 }
 
 const TOM = {
@@ -50,8 +49,16 @@ export async function sendMessageToLLM(history, personalidade, nomeModelo = 'Com
 
   const PERSONALIDADE_PROMPTS = createPersonalidadePrompts(nomeModelo, nomeUsuario)
   const PERSONALIDADE_PADRAO = PERSONALIDADE_PROMPTS['Amigável']
-  const systemPrompt = PERSONALIDADE_PROMPTS[personalidade] || PERSONALIDADE_PADRAO
+  let systemPrompt = PERSONALIDADE_PROMPTS[personalidade] || PERSONALIDADE_PADRAO
 
+  
+  const ultimaMsg = [...history].reverse().find((m) => m.sender === 'user')?.text
+  if (ultimaMsg && precisaBuscar(ultimaMsg)) {
+    const contexto = await buscarNaWeb(ultimaMsg)
+    if (contexto) {
+      systemPrompt += `\n\nInformações da web sobre a pergunta atual (use para responder com precisão, mas continue falando de forma natural e curta, sem citar URLs nem soar robótico):\n${contexto}`
+    }
+  }
 
   const messages = [
     { role: 'system', content: systemPrompt },
@@ -71,8 +78,8 @@ export async function sendMessageToLLM(history, personalidade, nomeModelo = 'Com
       body: JSON.stringify({
         model: MODEL,
         messages,
-        temperature: 0.9,   
-        max_tokens: 300,    
+        temperature: 0.7,   
+        max_tokens: 150,    
       }),
     })
 

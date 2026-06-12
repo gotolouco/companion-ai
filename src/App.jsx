@@ -4,6 +4,7 @@ import ChatBox from './components/ChatBox'
 import ChatHistory from './components/ChatHistory'
 import SidePanel from './components/SidePanel'
 import { useChat } from '@/hooks/useChat'
+import { useDarkMode } from '@/hooks/useDarkMode'
 import { MODELOS } from '@/lib/models'
 import { PERSONALIDADE_PADRAO, gerarRespostaRosto } from '@/lib/personalidades'
 import { montarSaudacao } from '@/lib/saudacao'
@@ -18,9 +19,11 @@ export default function App() {
   const [nomeUsuario, setNomeUsuario] = useState('')
   const timeoutRef = useRef(null)
 
+  const [dark, toggleDark] = useDarkMode()
+
   const nomeModelo = MODELOS.find((m) => m.file === avatar)?.label || 'Companheiro'
 
-  const { chat, loading, speaking, gesture, sendMessage, falarComoBot } =
+  const { chat, loading, speaking, speechText, gesture, sendMessage, falarComoBot } =
     useChat(personalidade, nomeModelo, nomeUsuario)
 
   useEffect(() => {
@@ -63,7 +66,7 @@ export default function App() {
 
   return (
     <div className="app pl-0 sm:pl-16" style={appStyle}>
-      <ThreeViewer speaking={speaking} avatar={avatar} armAngle={armAngle} gesture={gesture} onFaceClick={handleFaceClick} eyesClosed={eyesClosed} />
+      <ThreeViewer speaking={speaking} speechText={speechText} avatar={avatar} armAngle={armAngle} gesture={gesture} onFaceClick={handleFaceClick} eyesClosed={eyesClosed} />
       <ChatHistory messages={chat} loading={loading} />
       <ChatBox onSend={sendMessage} />
       <SidePanel
@@ -77,6 +80,8 @@ export default function App() {
         onBackgroundChange={setBackground}
         nomeUsuario={nomeUsuario}
         onNomeUsuarioChange={setNomeUsuario}
+        dark={dark}
+        onToggleDark={toggleDark}
       />
     </div>
   )

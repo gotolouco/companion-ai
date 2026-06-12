@@ -3,17 +3,21 @@ import { useFrame } from "@react-three/fiber";
 import { VRMLoaderPlugin } from '@pixiv/three-vrm';
 import { useEffect, useRef } from "react";
 import { prepararAvatar, animarAvatar } from "@/lib/vrm";
+import { useTextLipSync } from "@/hooks/useTextLipSync";
 
-export const VRMAvatar = ({ avatar, speaking = false, armAngle = 1.0, gesture = null, eyesClosed = false, ...props }) => {
+export const VRMAvatar = ({ avatar, speaking = false, speechText = "", armAngle = 1.0, gesture = null, eyesClosed = false, ...props }) => {
     const { scene, userData } = useGLTF(`models/${avatar}`, undefined, undefined, (loader) => {
         loader.register((parser) => {
             return new VRMLoaderPlugin(parser);
         });
     });
 
-    // Mantém os valores mais recentes acessíveis dentro do useFrame.
-    const speakingRef = useRef(speaking);
-    speakingRef.current = speaking;
+
+    const intensities = useTextLipSync(speechText, speaking);
+    const intensitiesRef = useRef(intensities);
+    intensitiesRef.current = intensities;
+
+
     const armAngleRef = useRef(armAngle);
     armAngleRef.current = armAngle;
     const gestureRef = useRef(gesture);
@@ -21,7 +25,7 @@ export const VRMAvatar = ({ avatar, speaking = false, armAngle = 1.0, gesture = 
     const eyesClosedRef = useRef(eyesClosed);
     eyesClosedRef.current = eyesClosed;
 
-    // Posição do mouse normalizada [-1, 1] para o olhar acompanhar o cursor.
+
     const mouseRef = useRef({ x: 0, y: 0 });
     useEffect(() => {
         const onMove = (e) => {
@@ -43,7 +47,7 @@ export const VRMAvatar = ({ avatar, speaking = false, armAngle = 1.0, gesture = 
             vrm,
             state.clock.elapsedTime,
             delta,
-            speakingRef.current,
+            intensitiesRef.current,
             armAngleRef.current,
             gestureRef.current,
             eyesClosedRef.current,
